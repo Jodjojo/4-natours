@@ -150,3 +150,59 @@ exports.getTourStats = async (req, res) => {
     });
   }
 };
+
+// UNWINDING AND PROJECTION(how many tours per month in a year)
+exports.getMonthlyPlan = async (req, res) => {
+  try {
+    const year = req.params.year * 1; // 2021
+    const plan = await Tour.aggregate([
+      {
+        $unwind: '$startDates', //deconstruct startDates array and create one document per output
+      },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`), //filter based on tours with start dates after january 2021
+            $lte: new Date(`${year}-12-31`), //tours before december 31, 2021
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: '$startDates' }, //separating month from full date
+          numTourStarts: { $sum: 1 }, //num tours per month
+          tours: { $push: '$name' }, //info on tour name in new array
+        },
+      },
+      {
+        $addFields: {
+          month: '$_id',
+        }, //add new field to store id data
+      },
+      {
+        $project: {
+          _id: 0,
+        }, //for the id field to not show
+      },
+      {
+        $sort: {
+          numTourStarts: -1,
+        },
+      },
+      {
+        $limit: 12, //limit number of documents per page
+      },
+    ]);
+    res.status(200).json({
+      status: `success`,
+      data: {
+        plan,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+};
