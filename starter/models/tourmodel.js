@@ -1,14 +1,21 @@
 const mongoose = require('mongoose');
+// eslint-disable-next-line import/no-extraneous-dependencies
 const slugify = require('slugify');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const validator = require('validator');
 // SIMPLE TOUR MODEL
 const tourSchema = new mongoose.Schema(
   {
     //object of schema properties
     name: {
       type: String,
-      required: [true, 'A tour must have a name'], //schema type options
+      // Data validators: Built-in
+      required: [true, 'A tour must have a name'], //schema type options...all data types
       unique: true,
       trim: true,
+      maxlength: [40, 'A tour name must have less or equal than 40 characters'], //for strings
+      minlength: [10, 'A tour name must have more or equal to 10 characters'],
+      // validate: [validator.isAlpha, 'Tour name must only contain characters'], //custom...if name is all characters/alphabets
     },
     slug: String,
     duration: {
@@ -22,10 +29,18 @@ const tourSchema = new mongoose.Schema(
     difficulty: {
       type: String,
       required: [true, 'A tour must have a dificulty'],
+      // Built-in-validators
+      enum: {
+        values: ['easy', 'medium', 'difficult'],
+        message: 'Difficulty is either: easy, medium or difficult',
+      }, //to restrict a value to certain defaults...only for strings
     },
     ratingsAverage: {
       type: Number,
       default: 4.5,
+      // Built in validators
+      min: [1, 'Rating number must be above 1.0'], //for numbers and dates
+      max: [5, 'Rating number must be below 5.0'],
     },
     ratingsQuantity: {
       type: Number,
@@ -35,7 +50,17 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'A tour must have a price'], //schema type options
     },
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      validate: {
+        //custom validation...if we want to validate if the discount price is higher than original tour price
+        validator: function (val) {
+          //this only points to current document on NEW document creation
+          return val < this.price;
+        },
+        message: 'Discount Price ({VALUE}) should be below regular price',
+      },
+    },
     summary: {
       type: String,
       trim: true,
