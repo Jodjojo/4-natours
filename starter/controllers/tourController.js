@@ -111,3 +111,42 @@ exports.deleteTour = async (req, res) => {
     });
   }
 };
+
+exports.getTourStats = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.5 } },
+      },
+      {
+        $group: {
+          _id: { $toUpper: '$difficulty' }, //group according to different property field name...$toUpper - change to uppercase
+          // _id: '$ratingsAverage',
+          numRatings: { $sum: '$ratingsQuantity' }, //number of ratings
+          numTours: { $sum: 1 }, //number of tours
+          avgRating: { $avg: '$ratingsAverage' }, //calculating average of field(ratingsAverage)
+          avgPrice: { $avg: '$price' }, //'$price' name of field with dollar sign
+          minPrice: { $min: '$price' }, //calculate minimum price
+          maxPrice: { $max: '$price' }, //max Price
+        },
+      },
+      {
+        $sort: { avgPrice: 1 }, //sort by ascending average price(1=ascending || -1=descending)
+      },
+      /*{
+        $match: { _id: { $ne: 'EASY' } }, //filter documents that excluding ARE NOT easy || ne=exclude
+      },*/
+    ]);
+    res.status(200).json({
+      status: `success`,
+      data: {
+        stats,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+};
