@@ -1,15 +1,13 @@
 const mongoose = require('mongoose');
 
 const dotenv = require(`dotenv`);
-dotenv.config({ path: './starter/config.env' });
+dotenv.config({ path: './config.env' });
 const app = require(`./app`);
 
 mongoose.set('strictQuery', false);
 
-const DB = process.env.DATABASE.replace(
-  '<PASSWORD>',
-  process.env.DATABASE_PASSWORD
-);
+const DB = process.env.DATABASE;
+
 // eslint-disable-next-line no-use-before-define
 dbConnect().catch((err) => console.log(err));
 async function dbConnect() {

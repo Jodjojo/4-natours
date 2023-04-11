@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const slugify = require('slugify');
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import/no-extraneous-dependencies, no-unused-vars
 const validator = require('validator');
 // SIMPLE TOUR MODEL
 const tourSchema = new mongoose.Schema(
