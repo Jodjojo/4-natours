@@ -1,7 +1,10 @@
+/* eslint-disable no-console */
 const mongoose = require('mongoose');
 
-const dotenv = require(`dotenv`);
-dotenv.config({ path: './starter/config.env' });
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, './.env') });
+// const dotenv = require(`dotenv`);
+// dotenv.config({ path: './starter/.env' });
 const app = require(`./app`);
 
 mongoose.set('strictQuery', false);
