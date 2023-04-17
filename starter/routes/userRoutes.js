@@ -1,9 +1,11 @@
 const express = require(`express`);
-const fs = require(`fs`);
 const userController = require(`./../controllers/userController`);
+const authController = require(`./../controllers/authController`);
 const Router = express.Router(); //declaring mounter variable
 
 // users
+
+Router.post('/signup', authController.signup);
 
 Router.route('/')
   .get(userController.getAllUsers)

@@ -32,4 +32,5 @@ app.all('*', (req, res, next) => {
 
 // Global error handling middleware
 app.use(globalErrorHandler);
+app.use(express.json());
 module.exports = app;
