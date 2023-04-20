@@ -6,6 +6,7 @@ const Router = express.Router(); //declaring mounter variable
 // users
 
 Router.post('/signup', authController.signup);
+Router.post('/login', authController.login);
 
 Router.route('/')
   .get(userController.getAllUsers)

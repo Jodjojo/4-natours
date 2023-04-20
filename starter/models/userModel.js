@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+
+// eslint-disable-next-line node/no-unpublished-require, import/no-extraneous-dependencies
 const bcrypt = require('bcryptjs');
+
 const userSchema = new mongoose.Schema({
   //object of schema properties
   name: {
@@ -21,6 +24,7 @@ const userSchema = new mongoose.Schema({
     // Built-in-validators
     message: 'Password must contain more than 8 characters',
     minlength: [8, 'A user password must have more or equal to 10 characters'],
+    select: false,
   },
   passwordConfirm: {
     type: String,
@@ -45,6 +49,14 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+
+// Instance method --- to return the encypted password back to english for processing login details
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 
 const User = mongoose.model('User', userSchema);
 
