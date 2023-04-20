@@ -1,6 +1,6 @@
 const express = require(`express`);
 const tourController = require(`./../controllers/tourController`);
-
+const authController = require(`./../controllers/authController`);
 // 2. ROUTE HANDLERS
 
 const Router = express.Router(); //declaring mounter variable
@@ -18,7 +18,7 @@ Router.route('/tour-stats').get(tourController.getTourStats); //Route for aggreg
 Router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
 
 Router.route('/')
-  .get(tourController.getAllTours)
+  .get(authController.protect, tourController.getAllTours)
   .post(tourController.createTour);
 
 Router.route('/:id')
