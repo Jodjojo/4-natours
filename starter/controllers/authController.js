@@ -18,6 +18,19 @@ const signToken = function (id) {
 }; //jwt.sign(payload(or header), secret, expiresin) === to create the signature we use to check the jwt
 // Signing up user and automatically logging in on sign up
 
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+
+  res.status(statusCode).json({
+    //201 - created status
+    status: 'success',
+    token,
+    data: {
+      user,
+    },
+  });
+};
+
 exports.signup = catchAsync(async (req, res, _next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -28,16 +41,7 @@ exports.signup = catchAsync(async (req, res, _next) => {
     passwordResetToken: req.body.passwordResetToken,
   });
 
-  const token = signToken(newUser._id);
-
-  res.status(201).json({
-    //201 - created status
-    status: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  createSendToken(newUser, 201, res);
 });
 
 // logging in a user on username, email and password basis
@@ -55,11 +59,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email or password', 401)); //401-unautorized status code
   }
   // 3.) if everything is okay, send token to client
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createSendToken(user, 200, res);
 });
 
 // Protecting the routes - only logged in users have access to all the routes
@@ -183,9 +183,23 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   await user.save();
   // 3.) Update changedPasswordAt property for the user
   // 4.) Log the user in, send JWT
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createSendToken(user, 200, res);
+});
+
+// Updating the current User password
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  // 1.) Get User from collection
+  const user = await User.findById(req.user.id).select('+password');
+  // 2.) Check if POSTed password is correct
+  if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
+    return next(new AppError('Your current password is wrong', 401));
+  }
+  // 3.)if so, update password
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();
+  // User.findbyIdAndUpdate will NOT workas Intended!
+
+  // 4.) Log user in, send JWT
+  createSendToken(user, 200, res);
 });

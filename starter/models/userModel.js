@@ -46,6 +46,18 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
+});
+
+// Query middleware to delete a deleted user from appearing on database
+userSchema.pre(/^find/, function (next) {
+  // this points to the current query
+  this.find({ active: { $ne: false } }); //all documents where active is not equal to false
+  next();
 });
 
 // encryption of passwords
