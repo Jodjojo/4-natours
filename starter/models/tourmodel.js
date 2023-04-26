@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const slugify = require('slugify');
 // eslint-disable-next-line import/no-extraneous-dependencies, no-unused-vars
-const validator = require('validator');
+const User = require('./userModel');
+// const validator = require('validator');
 // SIMPLE TOUR MODEL
 const tourSchema = new mongoose.Schema(
   {
@@ -85,6 +86,31 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    startLocation: {
+      // GeoJSON - special MongoDB data format used to specify geospatial data
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number], //longititude x latitude (different from normal coordinates structure)
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+    guides: Array, //embedding modeling tour guides
   },
   {
     //object of schema options
@@ -102,17 +128,14 @@ tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
-/*
-tourSchema.pre('save', function (next) {
-  console.log('will save documents...');
+
+// middleware to convert ID of guide to information of the guides (embedding)
+tourSchema.pre('save', async function (next) {
+  const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+  this.guides = await Promise.all(guidesPromises);
+
   next();
 });
-// post host document middleware
-tourSchema.post('save', function (doc, next) {
-  console.log(doc);
-  next();
-});
-*/
 
 // QUERY MIDDLEWARE
 // For example, having a private and secret tour not appearing on the result output

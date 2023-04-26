@@ -1,16 +1,15 @@
 const fs = require('fs');
 const mongoose = require('mongoose');
 
-const dotenv = require(`dotenv`);
-dotenv.config({ path: `./starter/config.env` });
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, './../../.env') });
+
 mongoose.set('strictQuery', false);
 // eslint-disable-next-line import/no-useless-path-segments
 const Tour = require('./../../models/tourmodel');
 
-const DB = process.env.DATABASE.replace(
-  '<PASSWORD>',
-  process.env.DATABASE_PASSWORD
-);
+const DB = process.env.DATABASE;
+
 // eslint-disable-next-line no-use-before-define
 dbConnect().catch((err) => console.log(err));
 async function dbConnect() {
@@ -25,9 +24,7 @@ mongoose
   .then(() => console.log('DB connection succesful'));
 
 // READ JSON FILE
-const tours = JSON.parse(
-  fs.readFileSync('./starter/dev-data/data/tours-simple.json', 'utf-8')
-);
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
 
 // IMPORT DATA INTO DB
 // eslint-disable-next-line no-unused-vars
@@ -53,12 +50,10 @@ const deleteData = async () => {
   process.exit();
 };
 
-if (process.argv[2] === '--delete') {
-  deleteData();
-} else if (process.argv[2] === '--import') {
+if (process.argv[2] === '--import') {
   importData();
-} else {
-  console.log("Please specify '--import' or '--delete'");
+} else if (process.argv[2] === '--delete') {
+  deleteData();
 }
 
 // console.log(process.argv);
