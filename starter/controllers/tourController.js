@@ -38,7 +38,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 });
 
 exports.getTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id);
+  const tour = await Tour.findById(req.params.id).populate(`reviews`); //virtual populate...reviews = name of field we want to populate
 
   // Tour.findOne({_id: req.params.id}) //MONGOOSE FORMAT
 

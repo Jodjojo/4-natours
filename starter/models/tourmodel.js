@@ -130,6 +130,15 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 }); //Virtual property of duration weeks
 
+// VIRTUAL POPULATE
+tourSchema.virtual('reviews', {
+  //reviews = name of tour we want to populate
+  ref: 'Review', //name of model we want to reference
+  foreignField: 'tour',
+  localField: '_id',
+  //name of field to connect the two data sets...1.) Foreign field(name of field in other model||schema) 2.) Local Field(name of field where data is stored in current schema)
+});
+
 // DOCUMENT MIDDLEWARE below runs before the .save() and .create() command
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
