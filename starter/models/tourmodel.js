@@ -110,7 +110,14 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
-    guides: Array, //embedding modeling tour guides
+    // guides: Array, //embedding modeling tour guides
+    guides: [
+      //modeling tour guides using child referencing
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     //object of schema options
@@ -130,12 +137,12 @@ tourSchema.pre('save', function (next) {
 });
 
 // middleware to convert ID of guide to information of the guides (embedding)
-tourSchema.pre('save', async function (next) {
-  const guidesPromises = this.guides.map(async (id) => await User.findById(id));
-  this.guides = await Promise.all(guidesPromises);
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
 
-  next();
-});
+//   next();
+// });
 
 // QUERY MIDDLEWARE
 // For example, having a private and secret tour not appearing on the result output
@@ -143,6 +150,15 @@ tourSchema.pre(/^find/, function (next) {
   //^find/=regular expression for any command that contains find it runs the same function
   this.find({ secretTour: { $ne: true } }); //filter out any that contains secretTour as true
   this.start = Date.now();
+  next();
+});
+
+// population query middleware...using a query middleware solves the problem of repeating the code in multiple different places
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt', //to remove some fields from displaying
+  }); //populating tour guides(filling referenced fields with actual data)
   next();
 });
 

@@ -39,6 +39,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 
 exports.getTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.id);
+
   // Tour.findOne({_id: req.params.id}) //MONGOOSE FORMAT
 
   //Adding 404 Not Found errors
