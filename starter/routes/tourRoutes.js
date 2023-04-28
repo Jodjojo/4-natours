@@ -1,9 +1,18 @@
 const express = require(`express`);
 const tourController = require(`./../controllers/tourController`);
 const authController = require(`./../controllers/authController`);
+const reviewRouter = require(`./../routes/reviewRoutes`);
+
 // 2. ROUTE HANDLERS
 
 const Router = express.Router(); //declaring mounter variable
+
+// POST /tour/1234231/reviews  - sample of creating a new review linked to an array
+// GET /tour/12edffs/reviews
+// GET /tour/123sfsf/reviews/12331
+
+// Nested Routes with Express
+Router.use('/:tourId/reviews', reviewRouter);
 
 // // PARAM MIDDLEWARE
 // Router.param('id', tourController.checkID);
