@@ -187,13 +187,13 @@ tourSchema.post(/^find/, function (docs, next) {
 });
 
 // AGGREGATION MIDDLEWARE
-// we use the Aggregate hook for this
-tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  //add a new stage in the aggregate to execute the secret tour middleware
-  console.log(this.pipeline());
-  next();
-});
+// // we use the Aggregate hook for this
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//   //add a new stage in the aggregate to execute the secret tour middleware
+//   console.log(this.pipeline());
+//   next();
+// });
 
 const Tour = mongoose.model('Tour', tourSchema);
 

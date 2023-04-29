@@ -36,6 +36,9 @@ Router.route('/tours-within/:distance/center/:latlng/unit/:unit').get(
 ); //route to find tours within a set :DISTANCE using the :LATITUDE AND LONGITUDE of your location and setting unit of paramters imputted using :UNIT
 // /tours-within//233/center/-40,45/unit/mi
 
+// ROute from Geospatial Aggregation: Calculating distances
+Router.route('/distances/:latlng/unit/:unit').get(tourController.getDistances);
+
 Router.route('/')
   .get(tourController.getAllTours)
   .post(
