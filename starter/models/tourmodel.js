@@ -131,6 +131,8 @@ const tourSchema = new mongoose.Schema(
 // tourSchema.index({ price: 1 });
 tourSchema.index({ price: 1, ratingsAverage: -1 }); //1=ascending order, -1=decending order
 tourSchema.index({ slug: 1 });
+// GEOSPATIAL INDEX
+tourSchema.index({ startLocation: '2dsphere' }); //index for a geospatial locator has a different paramter used to index based on the earths surface hold instead of the normal 1 or -1
 
 // VIRTUAL PROPERTY
 tourSchema.virtual('durationWeeks').get(function () {

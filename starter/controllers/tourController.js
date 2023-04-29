@@ -5,7 +5,7 @@ const Tour = require('../models/tourmodel');
 
 const catchAsync = require(`./../utils/catchAsync`);
 
-// const AppError = require(`./../utils/appError`);
+const AppError = require(`./../utils/appError`);
 const factory = require(`./handlerFactory`);
 
 exports.aliasTopTours = (req, res, next) => {
@@ -118,6 +118,39 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
     status: `success`,
     data: {
       plan,
+    },
+  });
+});
+
+// /tours-within//233/center/-40,45/unit/mi
+
+// GEOSPATIAL QUERIES: FINDING TOURS WITHIN RADIUS
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1; //to get the radius we are going to use we divide the distance by the radius of the earth in miles or km as it seems to convert to RADIANS
+
+  if (!lat || !lng) {
+    next(
+      new AppError(
+        'Please provide latitude and logitude in the format lat,lng',
+        400
+      )
+    );
+  }
+
+  // TO GET TOUR BASED ON FINDING THE STARTLOCATION(as defined in each tour)
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } }, //filter of the startLocation parameter
+  }); //in GEO JSON the longitude has to be defined first before the latitude which is the opposite of what it normally is.
+  // We use the geoWithin Operator to get the location using the center sphere operator and lat and long x radius
+
+  res.status(200).json({
+    status: 'Sucess',
+    results: tours.length,
+    data: {
+      data: tours,
     },
   });
 });

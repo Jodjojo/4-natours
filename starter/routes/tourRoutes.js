@@ -30,6 +30,12 @@ Router.route('/monthly-plan/:year').get(
   tourController.getMonthlyPlan
 );
 
+// Route for Geospatial Queries: Finding tours within a given radius
+Router.route('/tours-within/:distance/center/:latlng/unit/:unit').get(
+  tourController.getToursWithin
+); //route to find tours within a set :DISTANCE using the :LATITUDE AND LONGITUDE of your location and setting unit of paramters imputted using :UNIT
+// /tours-within//233/center/-40,45/unit/mi
+
 Router.route('/')
   .get(tourController.getAllTours)
   .post(
