@@ -36,6 +36,9 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+// PREVENTING DUPLICATE REVIEWS ON ONE TOUR FROM A USER
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 //populating our user
 reviewSchema.pre(/^find/, function (next) {
   // this.populate({

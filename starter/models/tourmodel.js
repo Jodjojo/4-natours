@@ -42,6 +42,7 @@ const tourSchema = new mongoose.Schema(
       // Built in validators
       min: [1, 'Rating number must be above 1.0'], //for numbers and dates
       max: [5, 'Rating number must be below 5.0'],
+      set: (val) => Math.round(val * 10) / 10, //to round up values to nearest decimal number(math.round rounds to nearest whole number)
     },
     ratingsQuantity: {
       type: Number,
