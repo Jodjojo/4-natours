@@ -60,7 +60,7 @@ userSchema.pre(/^find/, function (next) {
   next();
 });
 
-// encryption of passwords
+// encryption of passwords middleware
 userSchema.pre('save', async function (next) {
   // only run this function if password was actually modified
   if (!this.isModified('password')) return next();

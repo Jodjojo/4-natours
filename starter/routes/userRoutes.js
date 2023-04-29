@@ -11,14 +11,16 @@ Router.post('/login', authController.login);
 Router.post('/forgotPassword', authController.forgotPassword);
 Router.patch('/resetPassword/:token', authController.resetPassword);
 
-Router.patch(
-  '/updateMyPassword',
-  authController.protect,
-  authController.updatePassword
-);
+Router.use(authController.protect); //to protect all the routes that come from each level after this middleware
 
-Router.patch('/updateMe', authController.protect, userController.updateMe);
-Router.delete('/deleteMe', authController.protect, userController.deleteMe);
+Router.patch('/updateMyPassword', authController.updatePassword);
+
+// /ME endpoint using middleware
+Router.get('/me', userController.getMe, userController.getUser);
+Router.patch('/updateMe', userController.updateMe);
+Router.delete('/deleteMe', userController.deleteMe);
+
+Router.use(authController.restrictTo('admin'));
 
 Router.route('/')
   .get(userController.getAllUsers)

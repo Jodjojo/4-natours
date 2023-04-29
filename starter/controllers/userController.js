@@ -26,6 +26,12 @@ exports.createUser = (req, res) => {
   });
 };
 
+// /me endpoint
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
+
 //  Updating the cuurent user Data
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1.) Create error if user POSTs password data
