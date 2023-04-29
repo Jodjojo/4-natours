@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 // eslint-disable-next-line import/no-extraneous-dependencies
-
+const Tour = require(`./tourmodel`);
 // using parent referencing because we dont know how big our array of reviews could grow
 const reviewSchema = new mongoose.Schema(
   {
@@ -52,6 +52,50 @@ reviewSchema.pre(/^find/, function (next) {
   });
 
   next();
+});
+
+// CALCULATING AVERAGE RATINGS ON TOUR
+reviewSchema.statics.calcAverageRatings = async function (tourId) {
+  console.log(tourId);
+  const stats = await this.aggregate([
+    {
+      $match: { tour: tourId },
+    },
+    {
+      $group: {
+        _id: '$tour', //criteria field for grouping
+        nRating: {
+          $sum: 1,
+        },
+        avgRating: { $avg: '$rating' },
+      },
+    },
+  ]);
+  // console.log(stats);
+
+  // check for if stat has any content to set the ratings and rating
+  if (stats.length > 0) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: stats[0].nRating,
+      ratingsAverage: stats[0].avgRating,
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: 0,
+      ratingsAverage: 4.5,
+    });
+  }
+};
+
+//Updating average ratings and Quantity on New Review Creation
+reviewSchema.post('save', function () {
+  // "this" points to current review
+  this.constructor.calcAverageRatings(this.tour);
+});
+
+//Updating average ratings and Quantity on New Review Update or/and Delete
+reviewSchema.post(/^findOneAnd/, async (docs) => {
+  if (docs) await docs.constructor.calcAverageRatings(docs.tour);
 });
 
 const Review = mongoose.model('Review', reviewSchema);
