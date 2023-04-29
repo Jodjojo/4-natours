@@ -125,6 +125,12 @@ const tourSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+// Improving reading performance with index
+// tourSchema.index({ price: 1 });
+tourSchema.index({ price: 1, ratingsAverage: -1 }); //1=ascending order, -1=decending order
+tourSchema.index({ slug: 1 });
+
 // VIRTUAL PROPERTY
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
