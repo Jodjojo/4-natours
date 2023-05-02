@@ -1,4 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
+const path = require(`path`);
 const express = require(`express`);
 // const fs = require
 const morgan = require('morgan');
@@ -15,8 +16,13 @@ const userRouter = require(`./routes/userRoutes`);
 const reviewRouter = require(`./routes/reviewRoutes`);
 const app = express();
 
-// GLOBAL MIDDLEWARES
+// setting up PUG in express
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views')); //views is the folder of where we are storing our PUG templates
 
+// GLOBAL MIDDLEWARES
+// Serving static files
+app.use(express.static(path.join(__dirname, 'public')));
 // Setting security HTTP headers
 app.use(helmet());
 // Development loggin
@@ -54,9 +60,6 @@ app.use(
   })
 );
 
-// Serving static files
-app.use(express.static(`./starter/public`));
-
 // Creating our own middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
@@ -65,6 +68,14 @@ app.use((req, res, next) => {
 });
 
 // 3. ROUTES MOUNTING
+// creating a new route to access the pages from the view template
+app.get('/', (req, res) => {
+  res.status(200).render('base', {
+    tour: 'The Forest Hiker',
+    user: 'Joseph', //locals in the pug file
+  }); //base is the name of the filer we want to render
+});
+
 app.use('/api/v1/tours', tourRouter); //mounted tour router
 app.use('/api/v1/users', userRouter); //mounted user router
 app.use('/api/v1/reviews', reviewRouter);
