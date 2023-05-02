@@ -1,19 +1,20 @@
 doctype html 
 html 
   head 
-    title Natours| #{tour} 
-    //- interpolation to add the variable to a part===like the template literal strings we are familiar with
+    meta(charset='UTF-8')
+    meta(name='viewport" content="width=device-width, initial-scale=1.0')
     link(rel='stylesheet' href='css/style.css')
     link(rel='shortcut icon' type='image/png' href='img/favicon.png')
-    //- The reason the files style.css and favicon.png are automatically access without path directory is because of the static middleware that gave access to the public folder where these documents are kept
+    link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,300i,700')
+    title Natours | #{title}
 
   body 
-    h1= tour 
-    h2= user.toUpperCase()
-    //- to fix a data variable from the data gotten from our route...that is the locals we specified in our PUG route
+    // HEADER
+    include _header
 
-    - const x = 9 
-    //- const x - unbuffered code||doesnt affect outpur
-    h2= 2 * x 
-    //- h1 The Park Camper 
-    p This is just some text 
+    // CONTENT
+    block content 
+      h1 This is a placeholder heading  
+
+    // FOOTER
+    include _footer
