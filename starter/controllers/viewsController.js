@@ -13,9 +13,19 @@ exports.getOverview = catchAsync(async (req, res, next) => {
     tours,
   }); //overview is the pug template we want to render on this url
 });
-exports.getTour = (req, res) => {
+
+exports.getTour = catchAsync(async (req, res) => {
+  // 1.) get the data, for the requested tour(including reviews and guides)
+  const tour = await Tour.findOne({ slug: req.params.slug }).populate({
+    path: 'reviews',
+    fields: 'review rating user',
+  });
+  console.log(tour);
+  // 2.) Build the template
+
+  // 3.) Render template using data from step 1
   res.status(200).render('tour', {
-    tour: 'The Forest Hiker',
-    user: 'Joseph', //locals in the pug file
+    title: 'The Forest Hiker',
+    tour,
   }); //base is the name of the filer we want to render
-};
+});

@@ -5,6 +5,6 @@ const router = express.Router();
 // so on every URL subdirectory we call using the overview domain name the overview template is loaded
 router.get('/', viewsController.getOverview);
 // so on every URL subdirectory we call using the tour domain name the tour template is loaded
-router.get('/tour', viewsController.getTour);
+router.get('/tour/:slug', viewsController.getTour);
 
 module.exports = router;
