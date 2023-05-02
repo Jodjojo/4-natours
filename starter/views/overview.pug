@@ -2,4 +2,53 @@ extends base
 
 //- extending our content of our base template using blocks
 block content
-  h1 This is the tour overview   
+  main.main 
+    .card-container 
+      //- a loop over the tours data we called from the model with each iteration called 'tour'
+      //- we loop and replace the content of the html dynamically using contents from the Tour array as stored in our database for rach tour created
+      //- We use the to locale string to convert the full date string to simple strings establisging just the month and year
+      //- we use the tour.slug attached to the href in the link for the button to give the link to the url of the individual tours when clicked
+      //- the tour slug is saved on each tour in the array we are looping over and that is what we would use to bind the details to 
+      //- on line 43, the line "|" we added is called an empty pipe line: it is used to create space between two inline elements in an HTML template
+      each tour in tours 
+        .card
+          .card__header
+            .card__picture
+              .card__picture-overlay &nbsp;
+              img.card__picture-img(src=`img/tours/${tour.imageCover}`, alt=`${tour.name}`)
+            h3.heading-tertirary
+              span= tour.name 
+
+          .card__details
+            h4.card__sub-heading= `${tour.difficulty} ${tour.duration}-day tour`
+            p.card__text= tour.summary 
+            .card__data
+              svg.card__icon
+                use(xlink:href='img/icons.svg#icon-map-pin')
+              span= `${tour.startLocation.description}`
+            .card__data
+              svg.card__icon
+                use(xlink:href='img/icons.svg#icon-calendar')
+              span= tour.startDates[0].toLocaleString('en-us', {month: 'long', year: 'numeric'})
+            .card__data
+              svg.card__icon
+                use(xlink:href='img/icons.svg#icon-flag')
+              span= ` ${tour.locations.length} stops`
+            .card__data
+              svg.card__icon
+                use(xlink:href='img/icons.svg#icon-user')
+              span= `${tour.maxGroupSize} people`
+
+          .card__footer
+            p
+              span.card__footer-value=`$${tour.price}`
+              | 
+              span.card__footer-text per person
+            p.card__ratings
+              span.card__footer-value= tour.ratingsAverage
+              | 
+              span.card__footer-text=`rating (${tour.ratingsQuantity})`
+            a.btn.btn--green.btn--small(href=`/tours/${tour.slug}`) Details
+        
+      
+
