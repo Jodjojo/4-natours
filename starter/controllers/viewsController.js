@@ -20,12 +20,12 @@ exports.getTour = catchAsync(async (req, res) => {
     path: 'reviews',
     fields: 'review rating user',
   });
-  console.log(tour);
+
   // 2.) Build the template
 
   // 3.) Render template using data from step 1
   res.status(200).render('tour', {
-    title: 'The Forest Hiker',
+    title: `${tour.name} Tour`,
     tour,
   }); //base is the name of the filer we want to render
 });

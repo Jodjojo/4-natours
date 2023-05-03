@@ -25,7 +25,29 @@ app.set('views', path.join(__dirname, 'views')); //views is the folder of where 
 // Serving static files
 app.use(express.static(path.join(__dirname, 'public')));
 // Setting security HTTP headers
-app.use(helmet());
+const scriptSrcUrls = ['https://unpkg.com/', 'https://tile.openstreetmap.org'];
+const styleSrcUrls = [
+  'https://unpkg.com/',
+  'https://tile.openstreetmap.org',
+  'https://fonts.googleapis.com/',
+];
+const connectSrcUrls = ['https://unpkg.com', 'https://tile.openstreetmap.org'];
+const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
+
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: [],
+      connectSrc: ["'self'", ...connectSrcUrls],
+      scriptSrc: ["'self'", ...scriptSrcUrls],
+      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+      workerSrc: ["'self'", 'blob:'],
+      objectSrc: [],
+      imgSrc: ["'self'", 'blob:', 'data:', 'https:'],
+      fontSrc: ["'self'", ...fontSrcUrls],
+    },
+  })
+);
 // Development loggin
 if (process.env.NODE_ENV === `development`) {
   app.use(morgan(`dev`));

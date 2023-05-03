@@ -2,6 +2,12 @@ extends base
 
 include _reviewCard
 
+//- another way of extending a block where the content in the block is added to the end of what we extend it into(APPEND) and then block (PREPEND) is used to add it to the beginning of what we add it to
+//- script(src='/js/leaflet.js')
+block append head
+  link(rel='stylesheet' href='https://unpkg.com/leaflet@1.6.0/dist/leaflet.css')
+  script(src='https://unpkg.com/leaflet@1.6.0/dist/leaflet.js')
+  script(src='/js/leaflet.js' defer)
 
 mixin overviewBox(label, text, icon)
   .overview-box__detail
@@ -73,7 +79,7 @@ block content
         img.picture-box__img(src=`/img/tours/${img}`, alt=`${tour.name} image ${i + 1}`, class=`picture-box__img--${i + 1 }`)
 
   section.section-map
-    #map
+    #map(data-locations=`${JSON.stringify(tour.locations)}`)
 
   section.section-reviews
     .reviews
