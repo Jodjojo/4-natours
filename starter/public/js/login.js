@@ -1,3 +1,4 @@
+/* eslint-disable */
 const login = async (email, password) => {
   try {
     const res = await axios({
@@ -8,7 +9,13 @@ const login = async (email, password) => {
         password,
       },
     });
-    console.log(res);
+
+    if (res.data.status === 'success') {
+      alert('Logged in successfully');
+      window.setTimeout(() => {
+        location.assign('/');
+      }, 1500);
+    }
   } catch (err) {
     alert(err.response.data.message);
   }
