@@ -29,3 +29,15 @@ exports.getTour = catchAsync(async (req, res) => {
     tour,
   }); //base is the name of the filer we want to render
 });
+
+exports.getLoginForm = catchAsync(async (req, res) => {
+  res.status(200).render('login', {
+    title: `Log into your account`,
+  });
+});
+
+exports.getSignUpForm = async (req, res) => {
+  res.status(200).render('signup', {
+    title: `Create New Account`,
+  });
+};
