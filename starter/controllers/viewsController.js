@@ -31,13 +31,25 @@ exports.getTour = catchAsync(async (req, res) => {
 });
 
 exports.getLoginForm = catchAsync(async (req, res) => {
-  res.status(200).render('login', {
-    title: `Log into your account`,
-  });
+  res
+    .status(200)
+    .set(
+      'Content-Security-Policy',
+      "connect-src 'self' https://cdnjs.cloudflare.com"
+    )
+    .render('login', {
+      title: `Log into your account`,
+    });
 });
 
 exports.getSignUpForm = async (req, res) => {
-  res.status(200).render('signup', {
-    title: `Create New Account`,
-  });
+  res
+    .status(200)
+    .set(
+      'Content-Security-Policy',
+      "connect-src 'self' https://cdnjs.cloudflare.com"
+    )
+    .render('signup', {
+      title: `Create New Account`,
+    });
 };
