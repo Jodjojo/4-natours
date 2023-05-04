@@ -460,22 +460,34 @@ var _coreJs = require("core-js");
 var _polyfill = require("@babel/polyfill");
 var _leaflet = require("./leaflet");
 var _login = require("./login");
+var _signup = require("./signup");
 // DOM ELEMENTS
 const mapBox = document.getElementById(`map`);
 const loginForm = document.querySelector(`.form`);
+const signupForm = document.querySelector('.form--signup');
 // DELEGATION
 if (mapBox) {
     const locations = JSON.parse(mapBox.dataset.locations);
     _leaflet.displayMap(locations);
 }
+// LOGGING IN USER
 if (loginForm) loginForm.addEventListener('submit', (e)=>{
     e.preventDefault();
     const email = document.getElementById(`email`).value;
     const password = document.getElementById(`password`).value;
     _login.login(email, password);
 });
+// SIGNING UP USER
+if (signupForm) signupForm.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('password-confirm').value;
+    _signup.signup(name, email, password, confirmPassword);
+});
 
-},{"./login":"apbKM","@babel/polyfill":"c41dc","core-js":"a7Bhj","./leaflet":"f24YR","regenerator-runtime/runtime":"cH8Iq"}],"apbKM":[function(require,module,exports) {
+},{"./login":"apbKM","@babel/polyfill":"c41dc","core-js":"a7Bhj","./leaflet":"f24YR","regenerator-runtime/runtime":"cH8Iq","./signup":"hW8RO"}],"apbKM":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "login", ()=>login
@@ -33757,6 +33769,37 @@ const displayMap = (locations)=>{
     map.scrollWheelZoom.disable();
 };
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"JacNc"}]},["3RnMR","aQpZB"], "aQpZB", "parcelRequire11c7")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"JacNc"}],"hW8RO":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "signup", ()=>signup
+);
+/* eslint-disable */ var _axios = require("axios");
+var _axiosDefault = parcelHelpers.interopDefault(_axios);
+var _alert = require("./alert");
+const signup = async (name, email, password, passwordConfirm)=>{
+    try {
+        const res = await _axiosDefault.default({
+            method: 'POST',
+            url: 'http://127.0.0.1:3000/api/v1/users/signup',
+            data: {
+                name,
+                email,
+                password,
+                passwordConfirm
+            }
+        });
+        if (res.data.status === 'success') {
+            _alert.showAlert('success', 'Account created and logged in successfully');
+            window.setTimeout(()=>{
+                location.assign('/');
+            }, 1500);
+        }
+    } catch (err) {
+        _alert.showAlert('error', err.response.data.message);
+    }
+};
+
+},{"axios":"iYoWk","@parcel/transformer-js/src/esmodule-helpers.js":"JacNc","./alert":"14hD6"}]},["3RnMR","aQpZB"], "aQpZB", "parcelRequire11c7")
 
 //# sourceMappingURL=index.js.map
