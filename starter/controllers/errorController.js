@@ -27,41 +27,76 @@ const handleJWTError = () =>
 
 const handleJWTExpiredError = () =>
   new AppError('Your token has expired! Please login again.', 401);
-const sendErrorDev = (err, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    err,
-    message: err.message,
-    stack: err.stack,
-  });
+
+//Rendering Error page to each Development and Production error handler
+// if URL starts with /api for development error and if it doesnt start with /api then the error will be rendered on the webpage
+// req.originalUrl = entire URL without the host so it looks exactly like the route we created
+const sendErrorDev = (err, req, res) => {
+  //A.) API IN DEVELOPMENT STAGE
+  if (req.originalUrl.startsWith('/api')) {
+    return res.status(err.statusCode).json({
+      status: err.status,
+      err,
+      message: err.message,
+      stack: err.stack,
+    });
+  }
+  //B.) RENDERED WEBSITE IN DEVELOPMENT STAGE
+  console.error('ERROR💣💣💣', err);
+
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!',
+    msg: err.message,
+  }); //"error" name of the PUG template we are going to create to handle the render
 };
 
-const sendErrorProd = (err, res) => {
-  // Operational, trusted error: send message to client
-  if (err.isOperational) {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message,
-    });
-    // Programming or other unknown error: don't leak error details
-  } else {
+const sendErrorProd = (err, req, res) => {
+  //A.) API AT PRODUCTION STAGE
+  if (req.originalUrl.startsWith('/api')) {
+    //a.) Operational, trusted error: send message to client
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message,
+      });
+    }
+    //b.) Programming or other unknown error: don't leak error details
     // 1.) log error
     // eslint-disable-next-line no-console
     console.error('ERROR💣💣💣', err);
     // 2.) Send generic message
-    res.status(err.statusCode).json({
-      status: err.statusCode,
-      message: 'There was an error, it is a problem from the server side',
+    return res.status(500).json({
+      status: 'error',
+      message: 'Something went very wrong!',
     });
   }
+
+  //B.) RENDERED WEBSITE AT PRODUCTION STAGE
+  //a.) Operational, trusted error: send message to client
+  if (err.isOperational) {
+    return res.status(err.statusCode).render('error', {
+      title: 'Something went wrong!',
+      msg: err.message,
+    });
+  }
+  //b.) Programming or other unknown error: don't leak error details
+  // 1.) log error
+  // eslint-disable-next-line no-console
+  console.error('ERROR💣💣💣', err);
+  // 2.) Send generic message
+  return res.status(500).json({
+    status: 'error',
+    msg: 'Something went very wrong!',
+  });
 };
 
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
+
   // Seprating error handling in development stage from production stage
   if (process.env.NODE_ENV === 'development') {
-    sendErrorDev(err, res);
+    sendErrorDev(err, req, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = Object.assign(err);
     if (error.name === 'CastError') error = handleCastErrorDB(err); //invalid DB ID
@@ -69,7 +104,7 @@ module.exports = (err, req, res, next) => {
     if (error.name === 'ValidationError') error = handleValidationErrorDB(err); //Mongoose validation error
     if (error.name === 'JsonWebTokenError') error = handleJWTError();
     if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
-    sendErrorProd(error, res);
+    sendErrorProd(error, req, res);
     //sendErrorProd(error, res);
   }
 };
