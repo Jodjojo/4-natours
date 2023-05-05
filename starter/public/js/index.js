@@ -3,13 +3,14 @@ import 'regenerator-runtime/runtime';
 import 'core-js';
 import '@babel/polyfill';
 import { displayMap } from './leaflet';
-import { login } from './login';
+import { login, logout } from './login';
 import { signup } from './signup';
 
 // DOM ELEMENTS
 const mapBox = document.getElementById(`map`);
 const loginForm = document.querySelector(`.form`);
 const signupForm = document.querySelector('.form--signup');
+const logOutBtn = document.querySelector(`.nav__el--logout`);
 
 // DELEGATION
 if (mapBox) {
@@ -38,3 +39,5 @@ if (signupForm) {
     signup(name, email, password, confirmPassword);
   });
 }
+
+if (logOutBtn) logOutBtn.addEventListener('click', logout);

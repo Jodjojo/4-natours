@@ -78,6 +78,13 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+exports.logout = (req, res) => {
+  res.cookie('jwt', 'loggout', {
+    expires: new Date(Date.now() - 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({ status: 'success' });
+};
 // Protecting the routes - only logged in users have access to all the routes
 exports.protect = catchAsync(async (req, res, next) => {
   // 1.) Getting token and check if it is exists

@@ -465,6 +465,7 @@ var _signup = require("./signup");
 const mapBox = document.getElementById(`map`);
 const loginForm = document.querySelector(`.form`);
 const signupForm = document.querySelector('.form--signup');
+const logOutBtn = document.querySelector(`.nav__el--logout`);
 // DELEGATION
 if (mapBox) {
     const locations = JSON.parse(mapBox.dataset.locations);
@@ -486,11 +487,14 @@ if (signupForm) signupForm.addEventListener('submit', (e)=>{
     const confirmPassword = document.getElementById('password-confirm').value;
     _signup.signup(name, email, password, confirmPassword);
 });
+if (logOutBtn) logOutBtn.addEventListener('click', _login.logout);
 
-},{"./login":"apbKM","@babel/polyfill":"c41dc","core-js":"a7Bhj","./leaflet":"f24YR","regenerator-runtime/runtime":"cH8Iq","./signup":"hW8RO"}],"apbKM":[function(require,module,exports) {
+},{"./login":"apbKM","@babel/polyfill":"c41dc","core-js":"a7Bhj","regenerator-runtime/runtime":"cH8Iq","./leaflet":"f24YR","./signup":"hW8RO"}],"apbKM":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "login", ()=>login
+);
+parcelHelpers.export(exports, "logout", ()=>logout
 );
 /* eslint-disable */ var _axios = require("axios");
 var _axiosDefault = parcelHelpers.interopDefault(_axios);
@@ -513,6 +517,17 @@ const login = async (email, password)=>{
         }
     } catch (err) {
         _alert.showAlert('error', err.response.data.message);
+    }
+};
+const logout = async ()=>{
+    try {
+        const res = await _axiosDefault.default({
+            method: 'GET',
+            url: 'http://127.0.0.1:3000/api/v1/users/logout'
+        });
+        if (res.data.status === 'success') location.reload(true);
+    } catch (err) {
+        _alert.showAlert('error', `Error in logging out. Please Try again!`);
     }
 };
 
@@ -33800,6 +33815,6 @@ const signup = async (name, email, password, passwordConfirm)=>{
     }
 };
 
-},{"axios":"iYoWk","@parcel/transformer-js/src/esmodule-helpers.js":"JacNc","./alert":"14hD6"}]},["3RnMR","aQpZB"], "aQpZB", "parcelRequire11c7")
+},{"axios":"iYoWk","./alert":"14hD6","@parcel/transformer-js/src/esmodule-helpers.js":"JacNc"}]},["3RnMR","aQpZB"], "aQpZB", "parcelRequire11c7")
 
 //# sourceMappingURL=index.js.map
