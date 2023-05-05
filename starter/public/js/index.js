@@ -2,6 +2,7 @@
 import 'regenerator-runtime/runtime';
 import 'core-js';
 import '@babel/polyfill';
+import 'leaflet';
 import { displayMap } from './leaflet';
 import { login, logout } from './login';
 import { signup } from './signup';
