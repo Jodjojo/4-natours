@@ -469,6 +469,7 @@ const loginForm = document.querySelector(`.form--login`);
 const signupForm = document.querySelector('.form--signup');
 const logOutBtn = document.querySelector(`.nav__el--logout`);
 const userDataForm = document.querySelector(`.form-user-data`);
+const userPasswordForm = document.querySelector(`.form-user-password`);
 // DELEGATION
 if (mapBox) {
     const locations = JSON.parse(mapBox.dataset.locations);
@@ -495,7 +496,31 @@ if (userDataForm) userDataForm.addEventListener('submit', (e)=>{
     e.preventDefault();
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
-    _updateSettings.updateData(name, email);
+    _updateSettings.updateSettings({
+        name,
+        email
+    }, 'data');
+});
+if (userPasswordForm) userPasswordForm.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    // to run the process of alerting the user the data encryption process might take a while by chnaging the content of the button to updating
+    document.querySelector(`.btn--save-password`).textContent = 'Updating...';
+    // the declared variables of the input spaces we created in the PUG template
+    const passwordCurrent = document.getElementById('password-current').value;
+    const password = document.getElementById('password').value;
+    const passwordConfirm = document.getElementById('password-confirm').value;
+    // used await since we want to consume the promise from the function we created as we still want to exceute the clear inpu process after the function is called
+    await _updateSettings.updateSettings({
+        passwordCurrent,
+        password,
+        passwordConfirm
+    }, 'password');
+    // changing the content of the button back to save passwords after the encryption process has finished
+    document.querySelector(`.btn--save-password`).textContent = 'Save password';
+    // to set the input space back to empty after running the process
+    document.getElementById('password-current').value = '';
+    document.getElementById('password').value = '';
+    document.getElementById('password-confirm').value = '';
 });
 
 },{"./login":"apbKM","@babel/polyfill":"c41dc","core-js":"a7Bhj","regenerator-runtime/runtime":"cH8Iq","./leaflet":"f24YR","./signup":"hW8RO","leaflet":"18D1d","./updateSettings":"keNDf"}],"apbKM":[function(require,module,exports) {
@@ -44398,22 +44423,20 @@ const signup = async (name, email, password, passwordConfirm)=>{
 },{}],"keNDf":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "updateData", ()=>updateData
+parcelHelpers.export(exports, "updateSettings", ()=>updateSettings
 );
 /* eslint-disable */ var _axios = require("axios");
 var _axiosDefault = parcelHelpers.interopDefault(_axios);
 var _alert = require("./alert");
-const updateData = async (name, email)=>{
+const updateSettings = async (data, type)=>{
     try {
+        const url = type === 'password' ? 'http://127.0.0.1:3000/api/v1/users/updateMyPassword' : `http://127.0.0.1:3000/api/v1/users/updateMe`;
         const res = await _axiosDefault.default({
             method: 'PATCH',
-            url: 'http://127.0.0.1:3000/api/v1/users/updateMe',
-            data: {
-                name,
-                email
-            }
+            url,
+            data: data
         });
-        if (res.data.status === 'success') _alert.showAlert('success', 'Data has been successfully updated!');
+        if (res.data.status === 'success') _alert.showAlert('success', `${type.toUpperCase()} has been successfully updated!`);
     } catch (err) {
         _alert.showAlert('error', err.response.data.message);
         console.log(err.response.data.message);
