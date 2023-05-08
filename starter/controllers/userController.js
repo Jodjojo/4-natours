@@ -2,6 +2,8 @@
 /* eslint-disable arrow-body-style */
 const multer = require('multer');
 
+const sharp = require('sharp');
+
 const User = require('../models/userModel');
 
 const factory = require(`./handlerFactory`);
@@ -11,6 +13,8 @@ const catchAsync = require(`./../utils/catchAsync`);
 const AppError = require(`./../utils/appError`);
 
 // Configuring MULTER
+/*
+// Saving multer upload to disk storage 
 const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'public/img/users');
@@ -20,6 +24,10 @@ const multerStorage = multer.diskStorage({
     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
   },
 });
+*/
+
+// saving multer upload to memory
+const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
@@ -36,6 +44,27 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 exports.uploadUserPhoto = upload.single('photo');
+
+//Resizing images by using middleware
+exports.resizeUserPhoto = (req, res, next) => {
+  // If there is no file on the Upload user middleware return and call the next function
+  if (!req.file) return next();
+  // else the image resizing is done using the "sharp" library
+  // when doing image processing like this after uploading a file, it is always best not to save the file to the disk but to the memory
+  // to access the image stored on the memory we call it on the req.file.buffer
+  // the resize function takes the "width" and "height"...check for "resize" on the "sharp documentation"
+  // to Format is to convert all image files to the "jpeg"
+  // then after we convert it to a file on our Disk storage
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/users/${req.file.filename}`);
+
+  next();
+};
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
