@@ -1,4 +1,7 @@
 /* eslint-disable arrow-body-style */
+const multer = require('multer');
+
+// const sharp = require('sharp');
 const Tour = require('../models/tourmodel');
 // eslint-disable-next-line import/no-useless-path-segments
 // const APIFeatures = require('./../utils/apiFeatures');
@@ -8,6 +11,44 @@ const catchAsync = require(`./../utils/catchAsync`);
 const AppError = require(`./../utils/appError`);
 const factory = require(`./handlerFactory`);
 
+// UPLOADING MULTIPLE IMAGES WITH MULTER: TOURS
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(
+      new AppError('File is not an Image! Please upload only images', 404),
+      false
+    );
+  }
+};
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+// to use the upload middleware with multiple files we dont use the "upload.single" we use "upload.fields" that takes an array of objects where each object represents a filed name of what we want to upload
+// maxCount limits the number of times we can have a field with a particular name
+// On postman we can create a new tour and using the "form-data" part of the "body" under the update Tour we can then set the first key to imageCover and select one file and then the second key to images and set the 1-3 files as desired
+exports.uploadTourImages = upload.fields([
+  { name: 'imageCover', maxCount: 1 },
+  { name: 'images', maxCount: 3 },
+]);
+
+// one field which accepts multiple files=== "upload.array(''name of field', maxCount)"  ====req.files
+// one file only ===  ("upload.single(name)")===req.file
+//
+/////////////////////////////////////////////////
+//
+//When we want to handle the files and access it we use "req.files" for the multiple files as opposed to the "req.file" when we want to upload jus one image
+exports.resizeTourImages = (req, res, next) => {
+  console.log(req.files);
+  next();
+};
+
+////////////////////////////////////////////
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-ratingsAverage,price';
