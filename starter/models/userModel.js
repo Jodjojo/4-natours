@@ -11,7 +11,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please tell us your name'], //
   },
-  photo: String,
+  photo: {
+    // uploading the default image as the user icon for each new user
+    type: String,
+    default: `default.jpg`,
+  },
   role: {
     type: String,
     enum: ['user', 'guide', 'lead-guide', 'admin'],
