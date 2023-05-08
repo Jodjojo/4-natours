@@ -34,6 +34,11 @@ exports.getMe = (req, res, next) => {
 
 //  Updating the cuurent user Data
 exports.updateMe = catchAsync(async (req, res, next) => {
+  // On postman if we want to update the current logged in user, we do not do it under the "RAW" of the "BODY" but under the "FORM-data" cuz this is how we can send multi-part form data
+  // On the "form-data" we use the "key" section to define the name of the filed and the "value" to define the content
+  // We can also change the type of key we want (text, file(for photos since we are uploading a file) )
+  console.log(req.file);
+  console.log(req.body);
   // 1.) Create error if user POSTs password data
   if (req.body.password || req.body.passwordConfirm) {
     return next(
