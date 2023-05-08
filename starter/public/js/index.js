@@ -49,9 +49,14 @@ if (logOutBtn) logOutBtn.addEventListener('click', logout);
 if (userDataForm)
   userDataForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    updateSettings({ name, email }, 'data');
+    //Creating a multi part form data by appending each field we want to add to the form data
+    // we need to append each field we want to add to the multilog form data
+    const form = new FormData();
+    form.append('name', document.getElementById('name').value);
+    form.append('email', document.getElementById('email').value);
+    form.append('photo', document.getElementById('photo').files[0]);
+
+    updateSettings(form, 'data');
   });
 
 if (userPasswordForm)

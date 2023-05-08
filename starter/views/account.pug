@@ -36,9 +36,17 @@ block content
             .form__group.ma-bt-md
               label.form__label(for='email') Email address
               input#email.form__input(type='email', value=`${user.email}`, required, name='email')
+            //-To Add Image Upload function to the form 
+              //- can be done WITH and WITHOUT the API
+
+            //- WITHOUT THE API 
+              //- .form__group.form__photo-upload(action='/submit-photo' method='POST' enctype='multipart/form-data')
+            //- WITH API
             .form__group.form__photo-upload
               img.form__user-photo(src=`/img/users/${user.photo}`, alt='User photo')
-              a.btn-text(href='') Choose new photo
+              input.form__upload(type='file', accept='image/*', id='photo', name='photo') 
+              label(for='photo') Choose new photo
+
             .form__group.right
               button.btn.btn--small.btn--green Save settings
 
