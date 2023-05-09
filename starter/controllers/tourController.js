@@ -1,7 +1,7 @@
 /* eslint-disable arrow-body-style */
 const multer = require('multer');
 
-// const sharp = require('sharp');
+const sharp = require('sharp');
 const Tour = require('../models/tourmodel');
 // eslint-disable-next-line import/no-useless-path-segments
 // const APIFeatures = require('./../utils/apiFeatures');
@@ -29,24 +29,49 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 
-// to use the upload middleware with multiple files we dont use the "upload.single" we use "upload.fields" that takes an array of objects where each object represents a filed name of what we want to upload
-// maxCount limits the number of times we can have a field with a particular name
-// On postman we can create a new tour and using the "form-data" part of the "body" under the update Tour we can then set the first key to imageCover and select one file and then the second key to images and set the 1-3 files as desired
 exports.uploadTourImages = upload.fields([
   { name: 'imageCover', maxCount: 1 },
   { name: 'images', maxCount: 3 },
 ]);
 
-// one field which accepts multiple files=== "upload.array(''name of field', maxCount)"  ====req.files
-// one file only ===  ("upload.single(name)")===req.file
-//
-/////////////////////////////////////////////////
-//
-//When we want to handle the files and access it we use "req.files" for the multiple files as opposed to the "req.file" when we want to upload jus one image
-exports.resizeTourImages = (req, res, next) => {
-  console.log(req.files);
+exports.resizeTourImages = catchAsync(async (req, res, next) => {
+  // we check if the request contains files of the image cover and images respectively else we return it to the next middleware
+  if (!req.files.imageCover || !req.files.images) return next();
+
+  // 1.)Cover Image
+  // we create a variable that stores and creates a new unique file name for each image we upload or add to the t=new tour
+  // we then call the imageCover from the first element in the  buffer array
+  // req.params stores the content of the tour and req.user stores content of user
+  // we declare the req.body.imageCover to the filename we created
+  const imageCoverFilename = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2000, 1333) //3:2 for the photos
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${imageCoverFilename}`);
+
+  req.body.imageCover = imageCoverFilename;
+
+  // 2.) Images
+  // We loop over the array of images we request using the map method to create a new array to save the 3 promises that w=are the result of the async in the function and then await all using Promise all
+  // Then we use the PROMISE ALL function to await for the looping of all the images and each iteration and then we push each iteration into the initially empty imagesArray we created
+  // we use the file.buffer here because we are using the whole buffer as stored in the file array we created when we passed the images
+  req.body.images = [];
+  await Promise.all(
+    req.files.images.map(async (file, i) => {
+      const filename = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
+      await sharp(file.buffer)
+        .resize(2000, 1333)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${filename}`);
+
+      req.body.images.push(filename);
+    })
+  );
+
   next();
-};
+});
 
 ////////////////////////////////////////////
 exports.aliasTopTours = (req, res, next) => {
