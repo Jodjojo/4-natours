@@ -35,14 +35,9 @@ exports.uploadTourImages = upload.fields([
 ]);
 
 exports.resizeTourImages = catchAsync(async (req, res, next) => {
-  // we check if the request contains files of the image cover and images respectively else we return it to the next middleware
   if (!req.files.imageCover || !req.files.images) return next();
 
   // 1.)Cover Image
-  // we create a variable that stores and creates a new unique file name for each image we upload or add to the t=new tour
-  // we then call the imageCover from the first element in the  buffer array
-  // req.params stores the content of the tour and req.user stores content of user
-  // we declare the req.body.imageCover to the filename we created
   const imageCoverFilename = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
   await sharp(req.files.imageCover[0].buffer)
     .resize(2000, 1333) //3:2 for the photos
@@ -53,9 +48,6 @@ exports.resizeTourImages = catchAsync(async (req, res, next) => {
   req.body.imageCover = imageCoverFilename;
 
   // 2.) Images
-  // We loop over the array of images we request using the map method to create a new array to save the 3 promises that w=are the result of the async in the function and then await all using Promise all
-  // Then we use the PROMISE ALL function to await for the looping of all the images and each iteration and then we push each iteration into the initially empty imagesArray we created
-  // we use the file.buffer here because we are using the whole buffer as stored in the file array we created when we passed the images
   req.body.images = [];
   await Promise.all(
     req.files.images.map(async (file, i) => {
