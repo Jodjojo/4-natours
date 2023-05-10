@@ -60,6 +60,15 @@ module.exports = class Email {
   async sendWelcome() {
     await this.send('welcome', 'Welcome to the Natours Family!');
   }
+
+  // the "passwordReset" os the nameof the PUG template file we created that we are ingrafting into the function
+  // send email for reset password
+  async sendPasswordReset() {
+    await this.send(
+      'passwordReset',
+      'Your Password reset token(Valid for only 10 minutes!)'
+    );
+  }
 };
 
 //////////////////////////////////////////////////
