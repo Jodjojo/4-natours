@@ -1,8 +1,7 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+const { htmlToText } = require('html-to-text');
+
 const nodemailer = require('nodemailer');
 const pug = require('pug');
-
-const htmlToText = require(`html-to-text`);
 
 // constructor function is a function that is going to be called when a new object is called using this class
 // new Email(user, url).sendWelcome() --- for Example
@@ -40,24 +39,21 @@ module.exports = class Email {
   // template here is the PUG template we are going to create to handle the sending of the emails
   async send(template, subject) {
     // 1.) Render HTML based on PUG template
-    const html = pug.renderFile(
-      `${__dirname}/../views/emails/${template}.pug`,
-      {
-        firstName: this.firstName,
-        url: this.url,
-        subject,
-      }
-    );
+    const html = pug.renderFile(`${__dirname}/../views/email/${template}.pug`, {
+      firstName: this.firstName,
+      url: this.url,
+      subject,
+    });
     // 2.)Define email options
     const mailOptions = {
       from: this.from,
       to: this.to,
       subject, //equal to the subject that is passed into the send function when called
       html, //the html that was converted from the PUG template
-      text: htmlToText.fromString(html), // to convert our HTML text to simple TEXT file
+      text: htmlToText(html), // to convert our HTML text to simple TEXT file
     };
     // 3.) Create a transport and send email
-    await this.createNewTransport.sendMail(mailOptions);
+    await this.createNewTransport().sendMail(mailOptions);
   }
 
   // send welcome message for new user
