@@ -15,6 +15,7 @@ const globalErrorHandler = require(`./controllers/errorController`);
 const tourRouter = require(`./routes/tourRoutes`);
 const userRouter = require(`./routes/userRoutes`);
 const reviewRouter = require(`./routes/reviewRoutes`);
+const bookingRouter = require(`./routes/bookingRoutes`);
 const viewRouter = require(`./routes/viewRoutes`);
 const app = express();
 
@@ -100,7 +101,7 @@ app.use('/', viewRouter); //mounted views router
 app.use('/api/v1/tours', tourRouter); //mounted tour router
 app.use('/api/v1/users', userRouter); //mounted user router
 app.use('/api/v1/reviews', reviewRouter);
-
+app.use('/api/v1/bookings', bookingRouter);
 // handling errors with unfound routes
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
