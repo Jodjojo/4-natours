@@ -1,6 +1,7 @@
 const { htmlToText } = require('html-to-text');
 
 const nodemailer = require('nodemailer');
+
 const pug = require('pug');
 
 // constructor function is a function that is going to be called when a new object is called using this class
@@ -15,13 +16,21 @@ module.exports = class Email {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0];
     this.url = url;
-    this.from = `Yusuff Joseph <${process.env.EMAIL_FROM}>`;
+    this.from = `Natours Inc <${process.env.EMAIL_FROM}>`;
   }
 
   createNewTransport() {
     if (process.env.NODE_ENV === 'production') {
-      // ?SENDGRID
-      return 1;
+      //SendinBlue
+      return nodemailer.createTransport({
+        service: 'SendinBlue', // either provide service name OR host, port info
+        // host: process.env.SENDINBLUE_HOST,
+        // port: process.env.SENDINBLUE_PORT,
+        auth: {
+          user: process.env.SENDINBLUE_USERNAME,
+          pass: process.env.SENDINBLUE_PASSWORD,
+        },
+      });
     }
     // else if in development
     return nodemailer.createTransport({
