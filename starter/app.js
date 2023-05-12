@@ -28,19 +28,29 @@ app.set('views', path.join(__dirname, 'views')); //views is the folder of where 
 app.use(express.static(path.join(__dirname, 'public')));
 // Setting security HTTP headers
 
-const scriptSrcUrls = ['https://unpkg.com/', 'https://tile.openstreetmap.org'];
+const scriptSrcUrls = [
+  'https://unpkg.com/',
+  'https://tile.openstreetmap.org',
+  'https://js.stripe.com/',
+];
 const styleSrcUrls = [
   'https://unpkg.com/',
   'https://tile.openstreetmap.org',
   'https://fonts.googleapis.com/',
 ];
-const connectSrcUrls = ['https://unpkg.com', 'https://tile.openstreetmap.org'];
+const connectSrcUrls = [
+  'https://unpkg.com',
+  'https://tile.openstreetmap.org',
+  'ws://127.0.0.1:1234/',
+];
 const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
+const frameSrcUrls = ['https://js.stripe.com/'];
 
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: [],
+      frameSrc: [...frameSrcUrls],
       connectSrc: ["'self'", ...connectSrcUrls],
       scriptSrc: ["'self'", ...scriptSrcUrls],
       styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
@@ -49,6 +59,7 @@ app.use(
       imgSrc: ["'self'", 'blob:', 'data:', 'https:'],
       fontSrc: ["'self'", ...fontSrcUrls],
     },
+    contentSecurityPolicy: false,
   })
 );
 

@@ -7,6 +7,7 @@ import { displayMap } from './leaflet';
 import { login, logout } from './login';
 import { signup } from './signup';
 import { updateSettings } from './updateSettings';
+import { bookTour } from './stripe';
 
 // DOM ELEMENTS
 const mapBox = document.getElementById(`map`);
@@ -15,6 +16,7 @@ const signupForm = document.querySelector('.form--signup');
 const logOutBtn = document.querySelector(`.nav__el--logout`);
 const userDataForm = document.querySelector(`.form-user-data`);
 const userPasswordForm = document.querySelector(`.form-user-password`);
+const bookBtn = document.getElementById(`book-tour`);
 
 // DELEGATION
 if (mapBox) {
@@ -82,4 +84,13 @@ if (userPasswordForm)
     document.getElementById('password-current').value = '';
     document.getElementById('password').value = '';
     document.getElementById('password-confirm').value = '';
+  });
+
+if (bookBtn)
+  bookBtn.addEventListener('click', (e) => {
+    // Changing the content of the button on click
+    e.target.textContent = `Processing....`;
+    // we destructure the e.target dataset which is the data set of the button that is clicked and from our Tour pug we know that it is in turn actually the TourId
+    const { tourId } = e.target.dataset;
+    bookTour(tourId);
   });

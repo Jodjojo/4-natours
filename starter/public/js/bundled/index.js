@@ -463,6 +463,7 @@ var _leaflet1 = require("./leaflet");
 var _login = require("./login");
 var _signup = require("./signup");
 var _updateSettings = require("./updateSettings");
+var _stripe = require("./stripe");
 // DOM ELEMENTS
 const mapBox = document.getElementById(`map`);
 const loginForm = document.querySelector(`.form--login`);
@@ -470,6 +471,7 @@ const signupForm = document.querySelector('.form--signup');
 const logOutBtn = document.querySelector(`.nav__el--logout`);
 const userDataForm = document.querySelector(`.form-user-data`);
 const userPasswordForm = document.querySelector(`.form-user-password`);
+const bookBtn = document.getElementById(`book-tour`);
 // DELEGATION
 if (mapBox) {
     const locations = JSON.parse(mapBox.dataset.locations);
@@ -523,8 +525,15 @@ if (userPasswordForm) userPasswordForm.addEventListener('submit', async (e)=>{
     document.getElementById('password').value = '';
     document.getElementById('password-confirm').value = '';
 });
+if (bookBtn) bookBtn.addEventListener('click', (e)=>{
+    // Changing the content of the button on click
+    e.target.textContent = `Processing....`;
+    // we destructure the e.target dataset which is the data set of the button that is clicked and from our Tour pug we know that it is in turn actually the TourId
+    const { tourId  } = e.target.dataset;
+    _stripe.bookTour(tourId);
+});
 
-},{"regenerator-runtime/runtime":"cH8Iq","core-js":"a7Bhj","@babel/polyfill":"c41dc","leaflet":"18D1d","./leaflet":"f24YR","./login":"apbKM","./signup":"hW8RO","./updateSettings":"keNDf"}],"cH8Iq":[function(require,module,exports) {
+},{"regenerator-runtime/runtime":"cH8Iq","core-js":"a7Bhj","@babel/polyfill":"c41dc","leaflet":"18D1d","./leaflet":"f24YR","./login":"apbKM","./signup":"hW8RO","./updateSettings":"keNDf","./stripe":"ksRuO"}],"cH8Iq":[function(require,module,exports) {
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -44444,6 +44453,30 @@ const updateSettings = async (data, type)=>{
     }
 };
 
-},{"axios":"iYoWk","./alert":"14hD6","@parcel/transformer-js/src/esmodule-helpers.js":"JacNc"}]},["3RnMR","aQpZB"], "aQpZB", "parcelRequire11c7")
+},{"axios":"iYoWk","./alert":"14hD6","@parcel/transformer-js/src/esmodule-helpers.js":"JacNc"}],"ksRuO":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "bookTour", ()=>bookTour
+);
+/* eslint-disable */ var _axios = require("axios");
+var _axiosDefault = parcelHelpers.interopDefault(_axios);
+var _alert = require("./alert");
+const bookTour = async (tourId)=>{
+    const stripe = Stripe('pk_test_51N6tMpBoikv2ueRhqdcyENdgzL2LeDHQ7wYDKMb4f1sPJi9RkggbJX1r7pVNXC8hTvytaif3v4dtLMgaGfhX9ihg00Wsy2OPVQ');
+    // 1.) Get checkout session from server/API
+    try {
+        const session = await _axiosDefault.default(`http://127.0.0.1:3000/api/v1/bookings/checkout-session/${tourId}`);
+        console.log(session);
+        // 2.) Create checkout form and process credit card charge using stripe object
+        await stripe.redirectToCheckout({
+            sessionId: session.data.session.id
+        });
+    } catch (err) {
+        console.log(err);
+        _alert.showAlert('error', err);
+    }
+};
+
+},{"axios":"iYoWk","@parcel/transformer-js/src/esmodule-helpers.js":"JacNc","./alert":"14hD6"}]},["3RnMR","aQpZB"], "aQpZB", "parcelRequire11c7")
 
 //# sourceMappingURL=index.js.map
