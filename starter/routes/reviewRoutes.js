@@ -1,6 +1,7 @@
 const express = require(`express`);
 const reviewController = require(`./../controllers/reviewController`);
 const authController = require(`./../controllers/authController`);
+const bookingController = require(`./../controllers/bookingController`);
 
 // NESTED ROUTER WITH EXPRESS using merge params
 const Router = express.Router({ mergeParams: true }); //declaring mounter variable
@@ -12,6 +13,7 @@ Router.route('/')
   .post(
     authController.restrictTo('user'),
     reviewController.setTourAndUserIds,
+    bookingController.checkIfBooked,
     reviewController.createReview
   );
 
