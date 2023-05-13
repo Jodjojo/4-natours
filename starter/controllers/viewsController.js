@@ -1,5 +1,6 @@
 const Tour = require(`../models/tourmodel`);
 const User = require(`../models/userModel`);
+const Booking = require(`../models/bookingModel`);
 const catchAsync = require(`../utils/catchAsync`);
 const AppError = require(`../utils/appError`);
 
@@ -64,6 +65,23 @@ exports.getAccount = (req, res) => {
     title: `Your account`,
   });
 };
+
+exports.getMyTours = catchAsync(async (req, res, next) => {
+  // 1.) Find all bookings...we could use virtual populate
+  //  we query for the booking using the user ID and return all the logged bookings to the user
+  const bookings = await Booking.find({
+    user: req.user.id,
+  });
+  const tourIDs = bookings.map((el) => el.tour);
+  // the "$in" node operator selects all tours that have an ID in the toursIDs array
+  const tours = await Tour.find({ _id: { $in: tourIDs } });
+
+  // to render the booking page using the overview template so all the booked tours appear just as the tours appear on the overview page
+  res.status(200).render('overview', {
+    title: 'My Tours',
+    tours,
+  });
+});
 
 exports.updateUserData = catchAsync(async (req, res, next) => {
   const updatedUser = await User.findByIdAndUpdate(

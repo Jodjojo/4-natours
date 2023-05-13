@@ -20,6 +20,14 @@ router.get('/signup', authController.isLoggedIn, viewsController.getSignUpForm);
 
 router.get('/me', authController.protect, viewsController.getAccount);
 
+// Route for users to see thier bookings
+router.get(
+  '/my-tours',
+  bookingController.createBookingCheckout,
+  authController.protect,
+  viewsController.getMyTours
+);
+
 router.post(
   '/submit-user-data',
   authController.protect,
