@@ -42,6 +42,7 @@ const connectSrcUrls = [
   'https://unpkg.com',
   'https://tile.openstreetmap.org',
   'ws://127.0.0.1:1234/',
+  'https://cdnjs.cloudflare.com',
 ];
 const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 const frameSrcUrls = ['https://js.stripe.com/'];
@@ -59,7 +60,6 @@ app.use(
       imgSrc: ["'self'", 'blob:', 'data:', 'https:'],
       fontSrc: ["'self'", ...fontSrcUrls],
     },
-    contentSecurityPolicy: false,
   })
 );
 

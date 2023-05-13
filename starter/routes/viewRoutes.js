@@ -1,11 +1,17 @@
 const express = require(`express`);
 const viewsController = require(`../controllers/viewsController`);
 const authController = require(`../controllers/authController`);
+const bookingController = require(`../controllers/bookingController`);
 const router = express.Router();
 
-// so on every URL subdirectory we call using the overview domain name the overview template is loaded
-router.get('/', authController.isLoggedIn, viewsController.getOverview);
-// so on every URL subdirectory we call using the tour domain name the tour template is loaded
+// we are adding the create booking middleware to the "/" because that is our success route router...so that is what will be called after a successful checkout
+router.get(
+  '/',
+  bookingController.createBookingCheckout,
+  authController.isLoggedIn,
+  viewsController.getOverview
+);
+
 router.get('/tour/:slug', authController.isLoggedIn, viewsController.getTour);
 
 router.get('/login', authController.isLoggedIn, viewsController.getLoginForm);
