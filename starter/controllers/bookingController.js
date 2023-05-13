@@ -2,6 +2,7 @@
 const Stripe = require('stripe');
 const Tour = require('../models/tourmodel');
 const Booking = require('../models/bookingModel');
+const AppError = require('../utils/appError');
 
 const catchAsync = require(`./../utils/catchAsync`);
 const factory = require(`./handlerFactory`);
@@ -68,6 +69,17 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   // res.redirect is used to redirect the original successUrl(OriginalUrl) to the URL without the query link
   // used to create a new request but to the new URL we pass into the function
   res.redirect(req.originalUrl.split('?')[0]);
+});
+
+exports.checkIfBooked = catchAsync(async (req, res, next) => {
+  // To check if booked was bought by user who wants to review it
+  const booking = await Booking.find({
+    user: req.user.id,
+    tour: req.body.tour,
+  });
+  if (booking.length === 0)
+    return next(new AppError('You must buy this tour to review it', 401));
+  next();
 });
 
 exports.createBooking = factory.createOne(Booking);
