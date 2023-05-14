@@ -15,15 +15,8 @@
     "build:js": "parcel build ./public/js/index.js --dist-dir ./public/js/bundled",
     "debug": "ndb server.js"
   },
-  "repository": {
-    "type": "",
-    "url": ""
-  },
   "author": "Yusuff Joseph",
   "license": "ISC",
-  "bugs": {
-    "url": ""
-  },
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
     "axios": "^1.4.0",
