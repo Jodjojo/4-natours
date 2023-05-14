@@ -59,7 +59,7 @@ reviewSchema.pre(/^find/, function (next) {
 
 // CALCULATING AVERAGE RATINGS ON TOUR
 reviewSchema.statics.calcAverageRatings = async function (tourId) {
-  console.log(tourId);
+  // console.log(tourId);
   const stats = await this.aggregate([
     {
       $match: { tour: tourId },

@@ -35,7 +35,7 @@ const createSendToken = (user, statusCode, res) => {
   // Remove password from output
   user.password = undefined;
 
-  console.log(user.role);
+  // console.log(user.role);
   res.status(statusCode).json({
     //201 - created status
     status: 'success',
@@ -60,7 +60,7 @@ exports.signup = catchAsync(async (req, res, _next) => {
   // Using the email class that we created in the Email.js file to create new email
   // Specify the Url= the user account page
   const url = `${req.protocol}://${req.get('host')}/me`;
-  console.log(url);
+  // console.log(url);
   await new Email(newUser, url).sendWelcome();
   createSendToken(newUser, 201, res);
 });

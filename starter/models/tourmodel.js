@@ -181,10 +181,10 @@ tourSchema.pre(/^find/, function (next) {
 });
 
 // POST HOST has access to all the documents in the query
-tourSchema.post(/^find/, function (docs, next) {
-  console.log(`Query took ${Date.now() - this.start} milliseconds`);
-  next();
-});
+// tourSchema.post(/^find/, function (docs, next) {
+//   console.log(`Query took ${Date.now() - this.start} milliseconds`);
+//   next();
+// });
 
 // AGGREGATION MIDDLEWARE
 // // we use the Aggregate hook for this
