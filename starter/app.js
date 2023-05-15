@@ -10,6 +10,7 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
+const cors = require('cors');
 
 const AppError = require(`./utils/appError`);
 const globalErrorHandler = require(`./controllers/errorController`);
@@ -26,6 +27,21 @@ app.enable('trust proxy');
 // setting up PUG in express
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views')); //views is the folder of where we are storing our PUG templates
+
+// Implementing CORS
+///// This is a general implementation of cors on the whole application
+///// However, if we just wanted to implement cors on a particular route we can just add "cors()" to the route amongsts the routes
+app.use(cors()); //works for simple requests(get and post requests)
+
+// non simple- requests(put, patch and delte requests)
+
+app.options('*', cors()); //"*" signifying for all the routes. we can also directly call the route we want it for
+//////////////////////////////////////////////////////////////////
+// Access-Control-Allow-Origin *
+////If the domain we used for our API is different from what we used for our frontend app and we wanted to give access to the api
+// app.use(cors({
+//   origin: 'https://front-end-domain'
+// }))
 
 // GLOBAL MIDDLEWARES
 // Serving static files
