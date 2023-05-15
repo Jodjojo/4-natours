@@ -18,7 +18,7 @@ const signToken = function (id) {
 }; //jwt.sign(payload(or header), secret, expiresin) === to create the signature we use to check the jwt
 // Signing up user and automatically logging in on sign up
 
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
   // Sending JWT via cookie
 
@@ -27,9 +27,9 @@ const createSendToken = (user, statusCode, res) => {
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 //new present date plus 90 days date converted to millisecond
     ),
     httpOnly: true,
+    secure: req.secure || req.headers('x-forwarded-proto') === 'https',
   };
 
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
   res.cookie('jwt', token, cookieOptions);
 
   // Remove password from output
@@ -62,7 +62,7 @@ exports.signup = catchAsync(async (req, res, _next) => {
   const url = `${req.protocol}://${req.get('host')}/me`;
   // console.log(url);
   await new Email(newUser, url).sendWelcome();
-  createSendToken(newUser, 201, res);
+  createSendToken(newUser, 201, req, res);
 });
 
 // logging in a user on username, email and password basis
@@ -80,7 +80,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email or password', 401)); //401-unautorized status code
   }
   // 3.) if everything is okay, send token to client
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 exports.logout = (req, res) => {
@@ -235,7 +235,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   await user.save();
   // 3.) Update changedPasswordAt property for the user
   // 4.) Log the user in, send JWT
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 // Updating the current User password
@@ -253,5 +253,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   // User.findbyIdAndUpdate will NOT workas Intended!
 
   // 4.) Log user in, send JWT
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
