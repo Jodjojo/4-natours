@@ -7,7 +7,7 @@ const router = express.Router();
 // we are adding the create booking middleware to the "/" because that is our success route router...so that is what will be called after a successful checkout
 router.get(
   '/',
-  bookingController.createBookingCheckout,
+  // bookingController.createBookingCheckout,
   authController.isLoggedIn,
   viewsController.getOverview
 );
