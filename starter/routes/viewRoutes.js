@@ -23,7 +23,7 @@ router.get('/me', authController.protect, viewsController.getAccount);
 // Route for users to see thier bookings
 router.get(
   '/my-tours',
-  bookingController.createBookingCheckout,
+  // bookingController.createBookingCheckout,
   authController.protect,
   viewsController.getMyTours
 );
