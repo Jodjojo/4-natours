@@ -4,8 +4,6 @@ const authController = require(`../controllers/authController`);
 // const bookingController = require(`../controllers/bookingController`);
 const router = express.Router();
 
-// A middleware function thatrun for every single request coming in to router for the alerts query
-router.use(viewsController.alerts);
 // we are adding the create booking middleware to the "/" because that is our success route router...so that is what will be called after a successful checkout
 router.get(
   '/',
